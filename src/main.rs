@@ -32,8 +32,6 @@ fn main() -> Result<(), Error> {
 
     let mut c8 = chip8::Chip8::new(Path::new(&args[1]));
 
-    //let mut canvas = Canvas::new(64, 32);
-
     let event_loop = EventLoop::new();
     let mut input = WinitInputHelper::new();
     let window = {
@@ -57,7 +55,6 @@ fn main() -> Result<(), Error> {
     event_loop.run(move |event, _, control_flow| {
         if let Event::RedrawRequested(_) = event {
             let frame = pixels.get_frame();
-            println!("uwu {:?}?", inputs);
             let c8frame = c8.run_frame(inputs);
 
             for (i, pixel) in frame.chunks_exact_mut(4).enumerate() {
@@ -79,10 +76,6 @@ fn main() -> Result<(), Error> {
             {
                 *control_flow = ControlFlow::Exit;
             }
-        }
-
-        if let Event::RedrawEventsCleared = event {
-            window.request_redraw();
         }
 
         // Handle input events
@@ -118,6 +111,8 @@ fn main() -> Result<(), Error> {
                 pixels.resize_surface(size.width, size.height);
             }
         }
+
+        window.request_redraw();
     });
 
 }
