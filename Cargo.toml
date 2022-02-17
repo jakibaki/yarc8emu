@@ -1,0 +1,17 @@
+[package]
+name = "yarc8emu"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+console = "0.15.0"
+#drawille = "0.3.0"
+pixels = "0.9.0"
+rand = "0.8.5"
+tracing = "0.1.30"
+tracing-log = "0.1.2"
+tracing-subscriber = "0.3.8"
+winit = "0.26.1"
+winit_input_helper = "0.11.0"
