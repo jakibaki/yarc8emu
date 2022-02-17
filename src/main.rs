@@ -1,7 +1,6 @@
 #![feature(duration_constants)]
 
 mod chip8;
-mod display;
 use std::env;
 use std::path::Path;
 use tracing_log::LogTracer;

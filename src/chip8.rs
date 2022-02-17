@@ -94,48 +94,46 @@ impl Chip8 {
         match opcode {
             0 => {
                 match instr {
-                    0x00E0 => {
+                    0x00E0 => { // CLS
                         should_render = true;
                         self.display = [[false; 64]; 32];
-                    } // CLS
-                    0x00EE => {
-                        self.pc = self.pop() // RET
+                    } 
+                    0x00EE => { // RET
+                        self.pc = self.pop() 
                     }
                     _ => panic!("invalid opcode"),
                 }
             }
-            1 => {
-                self.pc = nnn - 2; // JP addr
-            }
-            2 => {
-                self.push(self.pc); // CALL addr
+            1 => { // JP addr
                 self.pc = nnn - 2;
             }
-            3 => {
+            2 => { // CALL addr
+                self.push(self.pc);
+                self.pc = nnn - 2;
+            }
+            3 => { // SE Vx, byte
                 if self.vx[ix as usize] == kk {
-                    // SE Vx, byte
+                    
                     self.pc += 2;
                 }
             }
-            4 => {
+            4 => { // SNE Vx, byte
                 if self.vx[ix as usize] != kk {
-                    // SNE Vx, byte
                     self.pc += 2;
                 }
             }
-            5 => {
+            5 => { // SE Vx, Vy
                 assert_eq!(nibble, 0);
                 if self.vx[ix as usize] == self.vx[iy as usize] {
-                    //  SE Vx, Vy
+                    
                     self.pc += 2;
                 }
             }
-            6 => {
-                self.vx[ix as usize] = kk; // LD Vx, byte
+            6 => { // LD Vx, byte
+                self.vx[ix as usize] = kk; 
             }
-            7 => {
+            7 => { // ADD Vx, byte
                 self.vx[ix as usize] = self.vx[ix as usize].overflowing_add(kk).0;
-                // ADD Vx, byte
             }
             8 => {
                 match nibble {
@@ -143,48 +141,48 @@ impl Chip8 {
                     1 => self.vx[ix as usize] |= self.vx[iy as usize], // OR Vx, Vy
                     2 => self.vx[ix as usize] &= self.vx[iy as usize], // AND Vx, Vy
                     3 => self.vx[ix as usize] ^= self.vx[iy as usize], // XOR Vx, Vy
-                    4 => {
+                    4 => { // ADD Vx, Vy
                         let (res, carry) =
-                            self.vx[ix as usize].overflowing_add(self.vx[iy as usize]); // ADD Vx, Vy
+                            self.vx[ix as usize].overflowing_add(self.vx[iy as usize]); 
                         self.vx[ix as usize] = res;
                         self.vx[0xf] = carry as u8;
                     }
-                    5 => {
+                    5 => { // SUB Vx, Vy
                         let (res, carry) =
-                            self.vx[ix as usize].overflowing_sub(self.vx[iy as usize]); // SUB Vx, Vy
+                            self.vx[ix as usize].overflowing_sub(self.vx[iy as usize]); 
                         self.vx[ix as usize] = res;
                         self.vx[0xf] = !carry as u8;
                     }
-                    6 => {
-                        self.vx[0xf] = self.vx[ix as usize] & 1; // SHR Vx {, Vy}
+                    6 => { // SHR Vx {, Vy}
+                        self.vx[0xf] = self.vx[ix as usize] & 1; 
                         self.vx[ix as usize] >>= 1;
                     }
-                    7 => {
+                    7 => { // SUBN Vx, Vy
                         let (res, carry) =
-                            self.vx[iy as usize].overflowing_sub(self.vx[ix as usize]); // SUBN Vx, Vy
+                            self.vx[iy as usize].overflowing_sub(self.vx[ix as usize]); 
                         self.vx[ix as usize] = res;
                         self.vx[0xf] = !carry as u8;
                     }
-                    0xe => {
-                        self.vx[0xf] = self.vx[ix as usize] >> 7; // SHL Vx {, Vy}
+                    0xe => { // SHL Vx {, Vy}
+                        self.vx[0xf] = self.vx[ix as usize] >> 7;
                         self.vx[ix as usize] <<= 1;
                     }
                     _ => panic!("invalid opcode"),
                 }
             }
-            9 => {
+            9 => { // SNE Vx, Vy
                 assert_eq!(nibble, 0);
                 if self.vx[ix as usize] != self.vx[iy as usize] {
-                    // SNE Vx, Vy
+                    
                     self.pc += 2
                 }
             }
             0xa => self.i = nnn,                          // LD I, addr
             0xb => self.pc = self.vx[0] as u16 + nnn - 2, // JP V0, addr
             0xc => self.vx[ix as usize] = self.rng.gen::<u8>() & kk, // RND Vx, byte
-            0xd => {
+            0xd => { // DRW Vx, Vy, nibble
                 let mut overlap: u8 = 0;
-                // DRW Vx, Vy, nibble
+                
                 let bx = self.vx[ix as usize];
                 let by = self.vx[iy as usize];
                 let n = nibble;
@@ -207,16 +205,16 @@ impl Chip8 {
             }
             0xe => {
                 match kk {
-                    0x9e => {
+                    0x9e => { // SKP Vx
                         if self.input[self.vx[ix as usize] as usize] {
                             self.pc += 2
                         }
-                    } // SKP Vx
-                    0xa1 => {
+                    } 
+                    0xa1 => { // SKNP Vx
                         if !self.input[self.vx[ix as usize] as usize] {
                             self.pc += 2
                         }
-                    } // SKNP Vx
+                    } 
                     _ => panic!("invalid opcode"),
                 }
             }
@@ -225,7 +223,7 @@ impl Chip8 {
                     0 => {
                         match nibble {
                             7 => self.vx[ix as usize] = self.delay_timer, //  LD Vx, DT
-                            0xa => {
+                            0xa => { // LD Vx, K
                                 self.vx[ix as usize] = 0;
                                 for (i, pressed) in self.input.iter().enumerate() {
                                     if *pressed {
@@ -250,11 +248,11 @@ impl Chip8 {
                             _ => panic!("invalid opcode"),
                         }
                     }
-                    2 => {
+                    2 => { // LD F, Vx
                         assert_eq!(nibble, 9);
                         self.i = 0x5 * (self.vx[ix as usize] as u16);
                     }
-                    3 => {
+                    3 => { // LD B, Vx
                         assert_eq!(nibble, 3);
                         let num = self.vx[ix as usize];
                         let hundreds = num / 100;
@@ -264,13 +262,13 @@ impl Chip8 {
                         self.ram[self.i as usize + 1] = tens;
                         self.ram[self.i as usize + 2] = ones;
                     }
-                    5 => {
+                    5 => { // LD [I], Vx
                         assert_eq!(nibble, 5);
                         for x in 0..=ix {
                             self.ram[(self.i + x as u16) as usize] = self.vx[x as usize];
                         }
                     }
-                    6 => {
+                    6 => { // LD Vx, [I]
                         assert_eq!(nibble, 5);
                         for x in 0..=ix {
                             self.vx[x as usize] = self.ram[(self.i + x as u16) as usize];
