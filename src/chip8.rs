@@ -304,6 +304,4 @@ impl Chip8 {
 
         &self.display
     }
-
-    //    fn updateInput(&mut self, ...)
 }
